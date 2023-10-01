@@ -1,66 +1,57 @@
 import { galleryItems } from './gallery-items.js';
-// Change code below this line
-console.log(galleryItems);
 
-const list = document.querySelector(".gallery");
+const list = document.querySelector('.gallery');
 
-const textImg = galleryItems
-  .map(
-    (obj) =>
-      `<li class="gallery__item">
-<a class="gallery__link" href="${obj.original}">
-    <img
-      class="gallery__image"
-      src="${obj.preview}"
-      data-source="${obj.original}"
-      alt="${obj.description}"
-    />
-  </a>
-</li>`
-  )
-  .join(" ");
+const createGalleryItem = ({ original, preview, description }) => `
+  <li class="gallery__item">
+    <a class="gallery__link" href="${original}">
+      <img
+        class="gallery__image"
+        src="${preview}"
+        data-source="${original}"
+        alt="${description}"
+      />
+    </a>
+  </li>
+`;
 
-list.insertAdjacentHTML("afterbegin", textImg);
+const galleryMarkup = galleryItems.map(createGalleryItem).join(' ');
 
-list.addEventListener("click", handleClick);
+list.insertAdjacentHTML('afterbegin', galleryMarkup);
 
-function handleClick(event) {
+list.addEventListener('click', handleImageClick);
+
+function handleImageClick(event) {
   event.preventDefault();
-  const currentProduct = event.target.closest(".gallery__item");
-  if (currentProduct === null) {
-    return;
-  }
 
-  const imgItem = galleryItems.find(
-    ({ original }) =>
-      original ===
-      currentProduct.querySelector(".gallery__image").dataset.source
-  );
+  const { target } = event;
 
-  const instance = basicLightbox.create(
-    `
-  <div class="modal">
-  <img
-      class="gallery__image"
-      src="${imgItem.original}"
-      alt="${imgItem.description}"
-    />
-  </div>`,
-    {
+  if (target.classList.contains('gallery__image')) {
+    const { source, description } = target.dataset;
+
+    const instance = basicLightbox.create(`
+      <div class="modal">
+        <img
+          class="gallery__image"
+          src="${source}"
+          alt="${description}"
+        />
+      </div>
+    `, {
       onShow: () => {
-        document.addEventListener("keydown", keyEvent);
+        document.addEventListener('keydown', handleKeyPress);
       },
       onClose: () => {
-        document.removeEventListener("keydown", keyEvent);
+        document.removeEventListener('keydown', handleKeyPress);
       },
-    }
-  );
+    });
 
-  instance.show();
+    instance.show();
+  }
+}
 
-  function keyEvent(event) {
-    if (event.code === "Escape") {
-      instance.close();
-    }
+function handleKeyPress(event) {
+  if (event.code === 'Escape') {
+    basicLightbox.close();
   }
 }
