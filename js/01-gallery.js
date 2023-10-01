@@ -1,25 +1,66 @@
 import { galleryItems } from './gallery-items.js';
 // Change code below this line
-
 console.log(galleryItems);
-const gallery = document.querySelector('.gallery');
 
- 
-gallery.addEventListener('click', onGalleryItemClick);
+const list = document.querySelector(".gallery");
 
- 
-function onGalleryItemClick(event) {
-    event.preventDefault();  
- 
-    if (event.target.tagName === 'IMG') {
-         
-        const largeImageUrl = event.target.dataset.source;
+const textImg = galleryItems
+  .map(
+    (obj) =>
+      `<li class="gallery__item">
+<a class="gallery__link" href="${obj.original}">
+    <img
+      class="gallery__image"
+      src="${obj.preview}"
+      data-source="${obj.original}"
+      alt="${obj.description}"
+    />
+  </a>
+</li>`
+  )
+  .join(" ");
 
-        // Відкрийте модальне вікно з великим зображенням
-        const instance = basicLightbox.create(`
-            <img src="${largeImageUrl}" width="800" height="600">
-        `);
+list.insertAdjacentHTML("afterbegin", textImg);
 
-        instance.show();
+list.addEventListener("click", handleClick);
+
+function handleClick(event) {
+  event.preventDefault();
+  const currentProduct = event.target.closest(".gallery__item");
+  if (currentProduct === null) {
+    return;
+  }
+
+  const imgItem = galleryItems.find(
+    ({ original }) =>
+      original ===
+      currentProduct.querySelector(".gallery__image").dataset.source
+  );
+
+  const instance = basicLightbox.create(
+    `
+  <div class="modal">
+  <img
+      class="gallery__image"
+      src="${imgItem.original}"
+      alt="${imgItem.description}"
+    />
+  </div>`,
+    {
+      onShow: () => {
+        document.addEventListener("keydown", keyEvent);
+      },
+      onClose: () => {
+        document.removeEventListener("keydown", keyEvent);
+      },
     }
+  );
+
+  instance.show();
+
+  function keyEvent(event) {
+    if (event.code === "Escape") {
+      instance.close();
+    }
+  }
 }
