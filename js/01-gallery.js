@@ -48,10 +48,11 @@ function handleImageClick(event) {
 
     instance.show();
   }
-}
 
-function handleKeyPress(event) {
-  if (event.code === 'Escape') {
-    basicLightbox.close();
+  function handleKeyPress(event) {
+    if (event.code === 'Escape') {
+      instance.close();
+    }
   }
 }
+

@@ -23,6 +23,4 @@ const lightbox = new SimpleLightbox(".gallery a", {
     captionDelay: 250,
 });
 
-lightbox.on("show.simplelightbox", function () {
-    console.log('Lightbox opened');
-});
+ 
