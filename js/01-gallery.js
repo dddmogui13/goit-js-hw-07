@@ -26,33 +26,34 @@ function handleImageClick(event) {
 
   const { target } = event;
 
-  if (target.classList.contains('gallery__image')) {
-    const { source, description } = target.dataset;
-
-    const instance = basicLightbox.create(`
-      <div class="modal">
-        <img
-          class="gallery__image"
-          src="${source}"
-          alt="${description}"
-        />
-      </div>
-    `, {
-      onShow: () => {
-        document.addEventListener('keydown', handleKeyPress);
-      },
-      onClose: () => {
-        document.removeEventListener('keydown', handleKeyPress);
-      },
-    });
-
-    instance.show();
+  if (target.nodeName !== 'IMG') {
+    return; 
   }
-
+  
+  const { source, description } = target.dataset;
+  
+  const instance = basicLightbox.create(`
+    <div class="modal">
+      <img
+        class="gallery__image"
+        src="${source}"
+        alt="${description}"
+      />
+    </div>
+  `, {
+    onShow: () => {
+      document.addEventListener('keydown', handleKeyPress);
+    },
+    onClose: () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    },
+  });
+  
+  instance.show();
+  
   function handleKeyPress(event) {
     if (event.code === 'Escape') {
       instance.close();
     }
   }
 }
-
